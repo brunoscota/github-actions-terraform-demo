@@ -8,5 +8,5 @@ resource "random_string" "random" {
 }
 
 output "random_string" {
-  value = random_string.random.id
+  value = random_string.random
 }
