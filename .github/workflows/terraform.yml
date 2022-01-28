@@ -45,6 +45,7 @@ jobs:
       run: terraform apply -auto-approve
 
   terraform-qa:
+    needs: terraform-dev
     name: 'Deploy to QA'
     runs-on: ubuntu-latest
     environment: qa
