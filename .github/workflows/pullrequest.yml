@@ -5,9 +5,8 @@ on:
 
 jobs:
   terraform-dev:
-    name: 'Deploy to dev'
+    name: 'Checks the PR for any issues'
     runs-on: ubuntu-latest
-    environment: dev
 
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     defaults:
@@ -33,3 +32,20 @@ jobs:
 
     - name: Terraform Plan
       run: terraform plan
+
+    - name: Run Snyk to check configuration files for security issues
+      uses: snyk/actions/iac@master
+      env:
+        # In order to use the Snyk Action you will need to have a Snyk API token.
+        # More details in https://github.com/snyk/actions#getting-your-snyk-token
+        # or you can signup for free at https://snyk.io/login
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        # Add the path to the configuration file that you would like to test.
+        # For example `deployment.yaml` for a Kubernetes deployment manifest
+        # or `main.tf` for a Terraform configuration file
+        file: main.tf
+    - name: Upload result to GitHub Code Scanning
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: snyk.sarif
